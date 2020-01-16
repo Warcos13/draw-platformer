@@ -5,24 +5,26 @@ import MouseTileMarker from "./mouse-tile-maker.js";
  * A class that extends Phaser.Scene and wraps up the core logic for the platformer level.
  */
 export default class PlatformerScene extends Phaser.Scene {
+
     preload() {
         this.load.spritesheet(
             "player",
-            "../assets/spritesheets/0x72-industrial-player-32px-extruded.png", {
+            "assets/spritesheets/0x72-industrial-player-32px-extruded.png", {
                 frameWidth: 32,
                 frameHeight: 32,
                 margin: 1,
                 spacing: 2
             }
         );
-        this.load.image("spike", "../assets/images/0x72-industrial-spike.png");
-        this.load.image("tiles", "../assets/tilesets/0x72-industrial-tileset-32px-extruded.png");
-        this.load.tilemapTiledJSON("map", "../assets/tilemaps/platformer.json");
+        this.load.image("spike", "assets/images/0x72-industrial-spike.png");
+        this.load.image("tiles", "assets/tilesets/0x72-industrial-tileset-32px-extruded.png");
+        this.load.tilemapTiledJSON("map", "assets/tilemaps/platformer.json");
     }
 
     create() {
         this.isPlayerDead = false;
-
+        this.tileCount = 0;
+        this.maxTileCount = 10;
         this.map = this.make.tilemap({ key: "map" });
         const tiles = this.map.addTilesetImage("0x72-industrial-tileset-32px-extruded", "tiles");
 
@@ -85,14 +87,18 @@ export default class PlatformerScene extends Phaser.Scene {
         // Add a colliding tile at the mouse position
         const pointer = this.input.activePointer;
         const worldPoint = pointer.positionToCamera(this.cameras.main);
-        if (pointer.isDown && !this.map.hasTileAtWorldXY(worldPoint.x, worldPoint.y, this.cameras.main, this.groundLayer)) {
+        if (pointer.isDown && !this.map.hasTileAtWorldXY(worldPoint.x, worldPoint.y, this.cameras.main, this.groundLayer) && this.tileCount < this.maxTileCount) {
             const tile = this.groundLayer.putTileAtWorldXY(6, worldPoint.x, worldPoint.y);
             tile.setCollision(true);
+            this.tileCount ++;
             this.tweens.add({
                 targets: tile,
-                alpha: 0,
+                alpha: 0.2,
                 duration: 3000,
-                onComplete: () => { this.map.removeTileAtWorldXY(worldPoint.x, worldPoint.y, true, true, this.cameras.main, this.groundLayer) }
+                onComplete: () => {
+                    this.map.removeTileAtWorldXY(worldPoint.x, worldPoint.y, true, true, this.cameras.main, this.groundLayer); 
+                    this.tileCount --;
+                }
             });
         }
 
