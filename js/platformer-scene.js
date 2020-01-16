@@ -16,7 +16,7 @@ export default class PlatformerScene extends Phaser.Scene {
             }
         );
         this.load.image("spike", "../assets/images/0x72-industrial-spike.png");
-        this.load.image("tiles", "../assets/tilesets/0x72-industrial-tileset-32px-extruded.png");
+        this.load.image("tiles", "https://warcos13.github.io/draw-platformer/assets/tilesets/0x72-industrial-tileset-32px-extruded.png");
         this.load.tilemapTiledJSON("map", "../assets/tilemaps/platformer.json");
     }
 
